@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\Photos\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Photos\04c785f9-e113-4ed2-bbcb-3f23dcb2a86e.jpg" />
+    <None Include="wwwroot\Photos\235c3b12-4825-4592-858c-bb5fa49aec6f.jpg" />
+    <None Include="wwwroot\Photos\2f183a45-0212-4201-9cb7-993c1c32a324.jpg" />
+    <None Include="wwwroot\Photos\48d5e87a7040cc932704b36f3c9c0ec5.jpg" />
+    <None Include="wwwroot\Photos\4bec9872-fac2-4986-9abf-6876e2ec0641.jpg" />
+    <None Include="wwwroot\Photos\4c473e07-a502-44bd-a2d1-2f48e96368ec.jpg" />
+    <None Include="wwwroot\Photos\5bcc59f0-da91-476c-a338-0b487ef4edd7.jpg" />
+    <None Include="wwwroot\Photos\a89f14310abcb7e688143dd905f0d689.jpg" />
+    <None Include="wwwroot\Photos\aecadd96-866a-43f7-8e69-63388e5e5c0d.jpg" />
+    <None Include="wwwroot\Photos\c7b79720-af82-4eb0-bd6f-b456b77cfafe.jpg" />
+    <None Include="wwwroot\Photos\cad9d767eec5b8722c4899b70b7e097f.jpg" />
+    <None Include="wwwroot\Photos\ceade1f6-10ab-4158-8f3b-6ef4453ae525.jpg" />
+    <None Include="wwwroot\Photos\e148088e-2eb8-46ef-b327-d957429b9d53.jpg" />
+    <None Include="wwwroot\Photos\f36d4292-1353-4b67-8bc2-dca0b97e27aa.jpg" />
+  </ItemGroup>
+
+</Project>
