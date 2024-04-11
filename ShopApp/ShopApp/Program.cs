@@ -1,4 +1,5 @@
 using Microsoft.Extensions.FileProviders;
+using ShopApp;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwagger();
+
+builder.Services.AddPersistence();
+
+builder.Services.AddMappings();
 
 var app = builder.Build();
 
@@ -30,7 +36,13 @@ app.UseStaticFiles(new StaticFileOptions
 	RequestPath = "/images"
 });
 
-app.UseAuthorization();
+app.UseCors(options =>
+	options.SetIsOriginAllowed(origin => true)
+		.AllowAnyHeader()
+		.AllowCredentials()
+		.AllowAnyMethod());
+
+app.UseHttpsRedirection();
 
 app.MapControllers();
 
