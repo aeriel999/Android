@@ -1,22 +1,17 @@
 package com.example.sim;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.ImageView;
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.example.sim.adapter.CategoryAdapter;
-import com.example.sim.databinding.ActivityMainBinding;
+
+import com.example.sim.category.CategoriesAdapter;
+
 import com.example.sim.dto.category.CategoryDto;
 import com.example.sim.services.ApplicationNetwork;
+import com.example.sim.services.BaseActivity;
 
 import java.util.List;
 
@@ -24,29 +19,26 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
+    RecyclerView rcCategories;
 
-    private ActivityMainBinding binding;
-    private CategoryAdapter adapter;
-
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-
 //        ImageView ivAvatar = findViewById(R.id.ivAvatar);
+//        String url = "https://content1.rozetka.com.ua/goods/images/big/343033787.jpg";
+//        String url = "http://10.0.2.2:5101/images/1.jpg";
 //        String url = "https://pd112.itstep.click/images/1.jpg";
 //        Glide.with(this)
-//                        .load(url)
-//                        .apply(new RequestOptions().override(400))
-//                        .into(ivAvatar);
+//                .load(url)
+//                .apply(new RequestOptions().override(400))
+//                .into(ivAvatar);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        rcCategories = findViewById(R.id.rcCategories);
+        rcCategories.setHasFixedSize(true);
+        rcCategories.setLayoutManager(new GridLayoutManager(this, 1, RecyclerView.VERTICAL, false));
 
         ApplicationNetwork
                 .getInstance()
@@ -56,12 +48,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<List<CategoryDto>> call, Response<List<CategoryDto>> response) {
                         List<CategoryDto> items = response.body();
-                        Log.d("--list categories--", String.valueOf(items.size()));
-
-                        if (items != null) {
-                            adapter = new CategoryAdapter( items); // Pass MainActivity context
-                            binding.rcView.setAdapter(adapter);
-                        }
+                        CategoriesAdapter ca = new CategoriesAdapter(items);
+                        rcCategories.setAdapter(ca);
+                        //Log.d("--list categories--", String.valueOf(items.size()));
                     }
 
                     @Override
@@ -70,20 +59,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-
-        setContentView(binding.getRoot());
-
-        init();
-
-    }
-
-
-
-
-    private void init() {
-        binding.rcView.setLayoutManager(new GridLayoutManager(MainActivity.this, 3));
-        binding.rcView.setAdapter(adapter);
     }
 
 }

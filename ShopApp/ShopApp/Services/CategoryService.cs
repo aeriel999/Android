@@ -6,7 +6,8 @@ using ShopApp.Repositories;
 
 namespace ShopApp.Services;
 
-public class CategoryService(CategoryRepositories categoryRepositories, IMapper mapper)
+public class CategoryService(
+	CategoryRepositories categoryRepositories, IMapper mapper, ImageStorageService imageStorageService)
 {
 	public async Task<ErrorOr<Category>> CreateCategoryAsync(CreateCategoryDto model)
 	{
@@ -17,9 +18,12 @@ public class CategoryService(CategoryRepositories categoryRepositories, IMapper 
 		if (newCategory == null)
 			return Error.Failure("Error in creating");
 
-		await categoryRepositories.SaveAsync();
+		if(model.Image != null && model.Image.Length > 0)
+		{ 
+			await imageStorageService.AddAvatarAsync(newCategory, model.Image!);
+		}
 
-		//ToDo add code for image
+		await categoryRepositories.SaveAsync();
 
 		return newCategory;
 	}

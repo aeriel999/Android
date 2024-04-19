@@ -10,5 +10,7 @@ public class CategoryMapper : IRegister
 	{
 		config.NewConfig<CreateCategoryDto, Category>()
 			.Ignore(src => src.Image);
+ 
+		
 	}
 }

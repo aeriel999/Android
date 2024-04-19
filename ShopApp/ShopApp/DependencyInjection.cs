@@ -21,7 +21,8 @@ namespace ShopApp
 		services.AddScoped<CategoryService>();
 		services.AddTransient<CategoryService>();
 		services.AddScoped<CategoryRepositories>();
-
+		services.AddScoped<ImageStorageService>();
+		services.AddTransient<ImageStorageService>();
 		return services;
 	}
 

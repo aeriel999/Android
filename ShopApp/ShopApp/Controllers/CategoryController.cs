@@ -8,8 +8,8 @@ namespace ShopApp.Controllers;
 [Route("api/[controller]")]
 public class CategoryController(CategoryService categoryService) : Controller
 {
-	[HttpPost("/create")]
-	public async Task<IActionResult> Create(CreateCategoryDto model)
+	[HttpPost("create")]
+	public async Task<IActionResult> Create([FromForm] CreateCategoryDto model)
 	{
 		var resultOfCategoryCreating = await categoryService.CreateCategoryAsync(model);
 
@@ -18,7 +18,7 @@ public class CategoryController(CategoryService categoryService) : Controller
 			errors => Problem(errors[0].ToString()));
 	}
 
-	[HttpPost("/edit")]
+	[HttpPost("edit")]
 	public async Task<IActionResult> Edit(EditCategoryDto model)
 	{
 		var resultOfCategoryEdited = await categoryService.EditCategoryAsync(model);
@@ -28,7 +28,7 @@ public class CategoryController(CategoryService categoryService) : Controller
 			errors => Problem(errors[0].ToString()));
 	}
 
-	[HttpPost("/delete")]
+	[HttpPost("delete")]
 	public async Task<IActionResult> Delete(Guid id)
 	{
 		var resultOfCategoryDeleted = await categoryService.DeleteCategoryByIdAsync(id);
@@ -38,7 +38,7 @@ public class CategoryController(CategoryService categoryService) : Controller
 			errors => Problem(errors[0].ToString()));
 	}
 
-	[HttpGet("/get")]
+	[HttpGet("get")]
 	public async Task<IActionResult> Get(Guid id)
 	{
 		var categoryOrError = await categoryService.GetCategoryByIdAsync(id);
@@ -48,8 +48,8 @@ public class CategoryController(CategoryService categoryService) : Controller
 			errors => Problem(errors[0].ToString()));
 	}
 
-	[HttpGet("/get-list")]
-	public async Task<IActionResult> GetList( )
+	[HttpGet("get-list")]
+	public async Task<IActionResult> GetList()
 	{
 		var categoriesListOrError = await categoryService.GetCategorListAsync();
 
