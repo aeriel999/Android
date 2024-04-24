@@ -1,5 +1,6 @@
 using Microsoft.Extensions.FileProviders;
 using ShopApp;
+using ShopApp.Initializer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +44,8 @@ app.UseCors(options =>
 		.AllowAnyMethod());
 
 //app.UseHttpsRedirection();
+
+UserAndRolesInitializer.SeedData(app);
 
 app.MapControllers();
 

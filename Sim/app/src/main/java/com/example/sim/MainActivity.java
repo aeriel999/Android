@@ -1,14 +1,15 @@
 package com.example.sim;
 
-import android.annotation.SuppressLint;
-import android.os.Bundle;
-
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 
 import com.example.sim.category.CategoriesAdapter;
 
+import com.example.sim.category.CategoryEditActivity;
 import com.example.sim.dto.category.CategoryDto;
 import com.example.sim.services.ApplicationNetwork;
 import com.example.sim.services.BaseActivity;
@@ -19,26 +20,65 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends BaseActivity {
+import androidx.appcompat.app.AlertDialog;
+
+import android.content.DialogInterface;
+public class MainActivity extends BaseActivity{
     RecyclerView rcCategories;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        ImageView ivAvatar = findViewById(R.id.ivAvatar);
-//        String url = "https://content1.rozetka.com.ua/goods/images/big/343033787.jpg";
-//        String url = "http://10.0.2.2:5101/images/1.jpg";
-//        String url = "https://pd112.itstep.click/images/1.jpg";
-//        Glide.with(this)
-//                .load(url)
-//                .apply(new RequestOptions().override(400))
-//                .into(ivAvatar);
-
         rcCategories = findViewById(R.id.rcCategories);
         rcCategories.setHasFixedSize(true);
         rcCategories.setLayoutManager(new GridLayoutManager(this, 1, RecyclerView.VERTICAL, false));
+
+        onLoadData();
+    }
+
+    private void onClickEditCategory(CategoryDto category) {
+        //Toast.makeText(this, category.getName(), Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(MainActivity.this, CategoryEditActivity.class);
+        Bundle b = new Bundle();
+        b.putInt("id", category.getId());
+        intent.putExtras(b);
+        startActivity(intent);
+        finish();
+    }
+
+    private void onClickDeleteCategory(CategoryDto category) {
+      //  Toast.makeText(this, category.getName(), Toast.LENGTH_LONG).show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage("Видалити " + category.getName() + "?")
+                .setPositiveButton("Так", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ApplicationNetwork.getInstance()
+                                .getCategoriesApi()
+                                .deleteCategory(category.getId())
+                                .enqueue(new Callback<Void>() {
+                                    @Override
+                                    public void onResponse(Call<Void> call, Response<Void> response) {
+                                        if(response.isSuccessful()) {
+                                            onLoadData();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<Void> call, Throwable throwable) {
+
+                                    }
+                                });
+                    }
+                })
+                .setNegativeButton("Ні", null) // No action when user clicks No
+                .show();
+    }
+
+
+
+    private void onLoadData() {
 
         ApplicationNetwork
                 .getInstance()
@@ -48,17 +88,19 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onResponse(Call<List<CategoryDto>> call, Response<List<CategoryDto>> response) {
                         List<CategoryDto> items = response.body();
-                        CategoriesAdapter ca = new CategoriesAdapter(items);
-                        rcCategories.setAdapter(ca);
-                        //Log.d("--list categories--", String.valueOf(items.size()));
-                    }
+                        CategoriesAdapter ca = new CategoriesAdapter(items,
+                                MainActivity.this::onClickEditCategory,
+                                MainActivity.this::onClickDeleteCategory);
 
+                        rcCategories.setAdapter(ca);
+                        Log.d("--list categories--", String.valueOf(items.size()));
+                    }
                     @Override
                     public void onFailure(Call<List<CategoryDto>> call, Throwable throwable) {
 
                     }
                 });
-
     }
+
 
 }
