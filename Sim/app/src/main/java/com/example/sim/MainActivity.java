@@ -13,6 +13,7 @@ import com.example.sim.category.CategoryEditActivity;
 import com.example.sim.dto.category.CategoryDto;
 import com.example.sim.services.ApplicationNetwork;
 import com.example.sim.services.BaseActivity;
+import com.example.sim.utils.CommonUtils;
 
 import java.util.List;
 
@@ -23,6 +24,9 @@ import retrofit2.Response;
 import androidx.appcompat.app.AlertDialog;
 
 import android.content.DialogInterface;
+import android.view.View;
+import android.widget.ProgressBar;
+
 public class MainActivity extends BaseActivity{
     RecyclerView rcCategories;
 
@@ -79,7 +83,7 @@ public class MainActivity extends BaseActivity{
 
 
     private void onLoadData() {
-
+        CommonUtils.showLoading(this);
         ApplicationNetwork
                 .getInstance()
                 .getCategoriesApi()
@@ -93,6 +97,8 @@ public class MainActivity extends BaseActivity{
                                 MainActivity.this::onClickDeleteCategory);
 
                         rcCategories.setAdapter(ca);
+
+                        CommonUtils.hideLoading();
                         Log.d("--list categories--", String.valueOf(items.size()));
                     }
                     @Override

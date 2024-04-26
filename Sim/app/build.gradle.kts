@@ -56,4 +56,6 @@ dependencies {
     // https://mvnrepository.com/artifact/androidx.recyclerview/recyclerview
     runtimeOnly("androidx.recyclerview:recyclerview:1.3.2")
 
+    implementation("com.github.ybq:Android-SpinKit:1.4.0")
+
 }

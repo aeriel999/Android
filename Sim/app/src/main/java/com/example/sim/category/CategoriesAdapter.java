@@ -18,9 +18,7 @@ import java.util.List;
 public class CategoriesAdapter extends RecyclerView.Adapter<CategoryCardViewHolder> {
     private List<CategoryDto> items;
     private final  OnItemClickListener editCategory;
-
     private final  OnItemClickListener deleteCategory;
-
 
     public CategoriesAdapter(List<CategoryDto> items, OnItemClickListener editCategory,  OnItemClickListener deleteCategory) {
         this.items = items;
@@ -65,8 +63,6 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoryCardViewHold
             });
         }
     }
-
-
 
     @Override
     public int getItemCount() {

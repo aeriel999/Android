@@ -14,10 +14,8 @@ public class CategoryCardViewHolder extends RecyclerView.ViewHolder {
     private TextView categoryName;
     private TextView categoryDescription;
     private ImageView categoryImage;
-
     public Button btnEdit;
     public Button btnDelete;
-
 
     public CategoryCardViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -26,7 +24,6 @@ public class CategoryCardViewHolder extends RecyclerView.ViewHolder {
         categoryImage = itemView.findViewById(R.id.ivCategoryImage);
         btnEdit = itemView.findViewById(R.id.btnEdit);
         btnDelete = itemView.findViewById(R.id.btnDelete);
-
     }
 
     public TextView getCategoryName() {

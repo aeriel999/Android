@@ -22,6 +22,7 @@ import com.example.sim.R;
 import com.example.sim.dto.category.CategoryDto;
 import com.example.sim.services.ApplicationNetwork;
 import com.example.sim.services.BaseActivity;
+import com.example.sim.utils.CommonUtils;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.File;
@@ -36,22 +37,19 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import android.Manifest;
+import android.widget.ProgressBar;
 
 public class CategoryCreateActivity extends BaseActivity {
-
     TextInputLayout tlCategoryName;
     TextInputLayout tlCategoryDescription;
     ImageView ivSelectImage;
-
     private String filePath;
-
     private static final int PICK_IMAGE_REQUEST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_create);
-
         tlCategoryName = findViewById(R.id.tlCategoryName);
         tlCategoryDescription = findViewById(R.id.tlCategoryDescription);
         ivSelectImage = findViewById(R.id.ivSelectImage);
@@ -82,33 +80,10 @@ public class CategoryCreateActivity extends BaseActivity {
         }
     }
 
-//    public void onClickSelectImage(View view) {
-//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//        intent.setType("image/*");
-//        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
-//    }
-
     public void openGallery(View view) {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-//            Uri uri = data.getData();
-//            File imageFile = new File(getRealPathFromURI(uri));
-//        }
-//    }
-//
-//    private String getRealPathFromURI(Uri uri) {
-//        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-//        cursor.moveToFirst();
-//        int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-//        return cursor.getString(idx);
-//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -129,7 +104,6 @@ public class CategoryCreateActivity extends BaseActivity {
         }
     }
 
-    // This method converts the image URI to the direct file system path of the image file
     private String getPathFromURI(Uri contentUri) {
         String[] projection = {MediaStore.Images.Media.DATA};
         Cursor cursor = getContentResolver().query(contentUri, projection, null, null, null);
@@ -144,6 +118,8 @@ public class CategoryCreateActivity extends BaseActivity {
     }
 
     public void onClickCreateCategory(View view) {
+        CommonUtils.showLoading(this);
+
         try {
             String name = tlCategoryName.getEditText().getText().toString().trim();
             String description = tlCategoryDescription.getEditText().getText().toString().trim();
@@ -170,6 +146,8 @@ public class CategoryCreateActivity extends BaseActivity {
                                 Intent intent = new Intent(CategoryCreateActivity.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();
+
+                                CommonUtils.hideLoading();
                             }
                         }
 

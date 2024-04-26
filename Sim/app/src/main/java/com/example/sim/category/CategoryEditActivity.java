@@ -18,9 +18,9 @@ import com.example.sim.MainActivity;
 import com.example.sim.R;
 import com.example.sim.constants.Urls;
 import com.example.sim.dto.category.CategoryDto;
-import com.example.sim.dto.category.CategoryEditDto;
 import com.example.sim.services.ApplicationNetwork;
 import com.example.sim.services.BaseActivity;
+import com.example.sim.utils.CommonUtils;
 import com.google.android.material.textfield.TextInputLayout;
 import java.io.File;
 import java.util.HashMap;
@@ -56,10 +56,10 @@ public class CategoryEditActivity extends BaseActivity {
         tlCategoryNameEdit = findViewById(R.id.tlCategoryNameEdit);
         tlCategoryDescriptionEdit = findViewById(R.id.tlCategoryDescriptionEdit);
         ivSelectImageEdit = findViewById(R.id.ivSelectEditImage);
-
     }
 
     private void fetchCategoryInfo(int categoryId) {
+        CommonUtils.showLoading(this);
 
         ApplicationNetwork.getInstance()
                 .getCategoriesApi()
@@ -78,16 +78,17 @@ public class CategoryEditActivity extends BaseActivity {
 
                                 if (category.getImage() != null) {
                                     url = Urls.BASE + "/images/" + category.getImage() ;
-
                                 }
+
                                 Glide.with(CategoryEditActivity.this)
                                         .load(url)
                                         .apply(new RequestOptions().override(300))
                                         .into(ivSelectImageEdit);
+
+                                CommonUtils.hideLoading();
                             }
                         }
                     }
-
                     @Override
                     public void onFailure(Call<CategoryDto> call, Throwable t) {
                         // Handle failure
@@ -103,8 +104,6 @@ public class CategoryEditActivity extends BaseActivity {
                 Log.v(TAG,"Permission is granted");
                 return true;
             } else {
-
-
                 Log.v(TAG,"Permission is revoked");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                 return false;
@@ -116,47 +115,18 @@ public class CategoryEditActivity extends BaseActivity {
         }
     }
 
-
-//    public void onClickSelectImage(View view) {
-//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//        intent.setType("image/*");
-//        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
-//    }
-
-
     public void openEditGallery(View view) {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
 
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-//            Uri uri = data.getData();
-//            File imageFile = new File(getRealPathFromURI(uri));
-//        }
-//    }
-//
-//    private String getRealPathFromURI(Uri uri) {
-//        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-//        cursor.moveToFirst();
-//        int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-//        return cursor.getString(idx);
-//    }
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             // Get the URI of the selected image
             Uri uri = data.getData();
-
 
             Glide
                     .with(this)
@@ -164,14 +134,11 @@ public class CategoryEditActivity extends BaseActivity {
                     .apply(new RequestOptions().override(300))
                     .into(ivSelectImageEdit);
 
-
             // If you want to get the file path from the URI, you can use the following code:
             filePath = getPathFromURI(uri);
         }
     }
 
-
-    // This method converts the image URI to the direct file system path of the image file
     private String getPathFromURI(Uri contentUri) {
         String[] projection = {MediaStore.Images.Media.DATA};
         Cursor cursor = getContentResolver().query(contentUri, projection, null, null, null);
@@ -185,8 +152,9 @@ public class CategoryEditActivity extends BaseActivity {
         return null;
     }
 
-
     public void onClickEditCategory(View view) {
+        CommonUtils.showLoading(this);
+
         try {
             String name = tlCategoryNameEdit.getEditText().getText().toString().trim();
             String description = tlCategoryDescriptionEdit.getEditText().getText().toString().trim();
@@ -197,15 +165,12 @@ public class CategoryEditActivity extends BaseActivity {
             params.put("description", RequestBody.create(MediaType.parse("text/plain"), description));
             params.put("id", RequestBody.create(MediaType.parse("text/plain"), String.valueOf(categoryId)));
 
-
-
             MultipartBody.Part imagePart=null;
             if (filePath != null) {
                 File imageFile = new File(filePath);
                 RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), imageFile);
                 imagePart = MultipartBody.Part.createFormData("image", imageFile.getName(), requestFile);
             }
-
 
             ApplicationNetwork.getInstance()
                     .getCategoriesApi()
@@ -218,14 +183,13 @@ public class CategoryEditActivity extends BaseActivity {
                                 Intent intent = new Intent(CategoryEditActivity.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();
+
+                                CommonUtils.hideLoading();
                             }
                         }
 
-
                         @Override
                         public void onFailure(Call<CategoryDto> call, Throwable throwable) {
-
-
                         }
                     });
         }
