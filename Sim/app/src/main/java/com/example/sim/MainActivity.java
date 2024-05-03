@@ -9,10 +9,15 @@ import android.util.Log;
 
 import com.example.sim.category.CategoriesAdapter;
 
+import com.example.sim.category.CategoryCreateActivity;
 import com.example.sim.category.CategoryEditActivity;
+import com.example.sim.dto.account.LoginDto;
+import com.example.sim.dto.account.LoginResponseDto;
 import com.example.sim.dto.category.CategoryDto;
 import com.example.sim.services.ApplicationNetwork;
 import com.example.sim.services.BaseActivity;
+
+import com.example.sim.services.JwtService;
 import com.example.sim.utils.CommonUtils;
 
 import java.util.List;
@@ -25,20 +30,32 @@ import androidx.appcompat.app.AlertDialog;
 
 import android.content.DialogInterface;
 import android.view.View;
-import android.widget.ProgressBar;
+import android.widget.EditText;
 
 public class MainActivity extends BaseActivity{
     RecyclerView rcCategories;
+    EditText etUsername;
+    EditText etPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        rcCategories = findViewById(R.id.rcCategories);
-        rcCategories.setHasFixedSize(true);
-        rcCategories.setLayoutManager(new GridLayoutManager(this, 1, RecyclerView.VERTICAL, false));
 
-        onLoadData();
+        if( JwtService.getInstance().isLogin())
+        {
+            setContentView(R.layout.activity_main);
+            rcCategories = findViewById(R.id.rcCategories);
+            rcCategories.setHasFixedSize(true);
+            rcCategories.setLayoutManager(new GridLayoutManager(this, 1, RecyclerView.VERTICAL, false));
+
+            onLoadData();
+        }else{
+            setContentView(com.example.sim.R.layout.activity_login);
+
+            etUsername = findViewById(R.id.etUsername);
+            etPassword = findViewById(R.id.etPassword);
+        }
+
     }
 
     private void onClickEditCategory(CategoryDto category) {
@@ -103,6 +120,44 @@ public class MainActivity extends BaseActivity{
                     }
                     @Override
                     public void onFailure(Call<List<CategoryDto>> call, Throwable throwable) {
+
+                    }
+                });
+    }
+
+    public void onClickLogin(View view) {
+        CommonUtils.showLoading(this);
+        LoginDto loginDto = new LoginDto();
+        loginDto.setEmail(etUsername.getText().toString());
+        loginDto.setPassword(etPassword.getText().toString());
+
+
+
+        ApplicationNetwork.getInstance()
+                .getAccountApi()
+                .login(loginDto)
+                .enqueue(new Callback<LoginResponseDto>() {
+
+                    @Override
+                    public void onResponse(Call<LoginResponseDto> call, Response<LoginResponseDto> response) {
+                        if (response.isSuccessful()) {
+                            LoginResponseDto data = response.body();
+
+                            String token = data.getToken();
+
+                            JwtService service = JwtService.getInstance();
+                            service.saveToken(token);
+
+                            Intent intent = new Intent(MainActivity.this, CategoryCreateActivity.class);
+                            startActivity(intent);
+                            finish();
+
+                            CommonUtils.hideLoading();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<LoginResponseDto> call, Throwable t) {
 
                     }
                 });
